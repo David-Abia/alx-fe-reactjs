@@ -6,8 +6,8 @@ const AddRecipeForm = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
     addRecipe({
       id: Date.now(),
