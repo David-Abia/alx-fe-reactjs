@@ -6,4 +6,3 @@ export const fetchUserData = async (username) => {
   );
   return response.data;
 };
-console.log('githubService file loaded');
