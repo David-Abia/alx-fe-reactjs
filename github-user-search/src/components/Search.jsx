@@ -6,14 +6,15 @@ const Search = () => {
   const [location, setLocation] = useState("");
   const [minRepos, setMinRepos] = useState("");
 
-  const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [page, setPage] = useState(1);
+  const [user, setUser] = useState(null);      // Basic search result
+  const [users, setUsers] = useState([]);      // Advanced search results
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Basic search
+  // -----------------------
+  // Basic search function
+  // -----------------------
   const handleBasicSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -21,33 +22,41 @@ const Search = () => {
     setUser(null);
     setUsers([]);
 
+    if (!username) {
+      setError("Please enter a username");
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await fetchUserData(username);
       setUser(data);
     } catch {
-      setError("Looks like we cant find the user");
+      setError("Looks like we can't find the user");
     } finally {
       setLoading(false);
     }
   };
 
-  // Advanced search
-  const handleAdvancedSearch = async (loadMore = false) => {
+  // -----------------------
+  // Advanced search function
+  // -----------------------
+  const handleAdvancedSearch = async () => {
     setLoading(true);
     setError("");
+    setUser(null);
+    setUsers([]);
 
     try {
-      const { users: newUsers } = await fetchAdvancedUsers({
-        username,
-        location,
-        minRepos,
-        page: loadMore ? page + 1 : 1,
-      });
+      const results = await fetchAdvancedUsers(username, location, minRepos);
 
-      setUsers(loadMore ? [...users, ...newUsers] : newUsers);
-      setPage(loadMore ? page + 1 : 1);
+      if (results.length === 0) {
+        setError("No users found matching your criteria");
+      }
+
+      setUsers(results);
     } catch {
-      setError("Looks like we cant find any users matching the criteria");
+      setError("Looks like we can't find any users");
     } finally {
       setLoading(false);
     }
@@ -91,9 +100,10 @@ const Search = () => {
           <button className="bg-blue-600 text-white px-4 py-2 rounded">
             Basic Search
           </button>
+
           <button
             type="button"
-            onClick={() => handleAdvancedSearch()}
+            onClick={handleAdvancedSearch}
             className="bg-green-600 text-white px-4 py-2 rounded"
           >
             Advanced Search
@@ -101,11 +111,13 @@ const Search = () => {
         </div>
       </form>
 
-      {/* States */}
+      {/* Loading and error messages */}
       {loading && <p className="mt-4 text-gray-700">Loading...</p>}
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
+      {/* ----------------- */}
       {/* Basic Search Result */}
+      {/* ----------------- */}
       {user && (
         <div className="mt-6 p-4 border rounded shadow flex items-center gap-4">
           <img
@@ -115,21 +127,16 @@ const Search = () => {
           />
           <div>
             <h3 className="text-lg font-semibold">{user.name || user.login}</h3>
-            <p>Location: {user.location || "N/A"}</p>
-            <p>Repositories: {user.public_repos}</p>
-            <p>Followers: {user.followers}</p>
-            <a
-              href={user.html_url}
-              target="_blank"
-              className="text-blue-600"
-            >
+            <a href={user.html_url} target="_blank" className="text-blue-600">
               View Profile
             </a>
           </div>
         </div>
       )}
 
+      {/* --------------------- */}
       {/* Advanced Search Results */}
+      {/* --------------------- */}
       {users.length > 0 && (
         <div className="mt-6 space-y-4">
           {users.map((u) => (
@@ -144,22 +151,12 @@ const Search = () => {
               />
               <div>
                 <h4 className="font-semibold">{u.login}</h4>
-                <p>Location: {u.location || "N/A"}</p>
-                <p>Repositories: {u.public_repos}</p>
-                <p>Followers: {u.followers}</p>
                 <a href={u.html_url} target="_blank" className="text-blue-600">
                   View Profile
                 </a>
               </div>
             </div>
           ))}
-
-          <button
-            onClick={() => handleAdvancedSearch(true)}
-            className="bg-gray-800 text-white px-4 py-2 rounded"
-          >
-            Load More
-          </button>
         </div>
       )}
     </div>

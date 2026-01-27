@@ -1,44 +1,24 @@
 import axios from "axios";
 
-const githubApi = axios.create({
+const api = axios.create({
   baseURL: "https://api.github.com",
 });
 
-// Basic user fetch
 export const fetchUserData = async (username) => {
-  const response = await githubApi.get(`/users/${username}`);
+  const response = await api.get(`/users/${username}`);
   return response.data;
 };
 
-// Advanced search with username, location, minRepos
-export const fetchAdvancedUsers = async ({
-  username = "",
-  location = "",
-  minRepos = "",
-  page = 1,
-}) => {
-  let queryParts = [];
+export const fetchAdvancedUsers = async (username, location, minRepos) => {
+  const parts = [];
+  if (username) parts.push(username);
+  if (location) parts.push(`location:${location}`);
+  if (minRepos) parts.push(`repos:>=${minRepos}`);
 
-  if (username) queryParts.push(username);
-  if (location) queryParts.push(`location:${location}`);
-  if (minRepos) queryParts.push(`repos:>=${minRepos}`);
+  const query = parts.join("+"); 
 
-  const query = queryParts.join("+");
+  if (!query) return []; 
 
-  const response = await githubApi.get(
-    `/search/users?q=${query}&per_page=10&page=${page}`
-  );
-
-  // Fetch extra details for each user (like public_repos, location)
-  const detailedUsers = await Promise.all(
-    response.data.items.map(async (user) => {
-      const userDetails = await githubApi.get(`/users/${user.login}`);
-      return userDetails.data;
-    })
-  );
-
-  return {
-    users: detailedUsers,
-    total_count: response.data.total_count,
-  };
+  const response = await api.get(`/search/users?q=${query}&per_page=10`);
+  return response.data.items;
 };
