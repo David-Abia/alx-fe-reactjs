@@ -1,8 +1,5 @@
 import { useState } from "react";
-import {
-  fetchUserData,
-  fetchAdvancedUsers,
-} from "../services/githubService";
+import { fetchUserData, fetchAdvancedUsers } from "../services/githubService";
 
 const Search = () => {
   const [username, setUsername] = useState("");
@@ -11,18 +8,18 @@ const Search = () => {
 
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
 
-  // BASIC SEARCH
+  // Basic search
   const handleBasicSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setUsers([]);
     setUser(null);
+    setUsers([]);
 
     try {
       const data = await fetchUserData(username);
@@ -34,36 +31,36 @@ const Search = () => {
     }
   };
 
-  // ADVANCED SEARCH
+  // Advanced search
   const handleAdvancedSearch = async (loadMore = false) => {
     setLoading(true);
     setError("");
 
     try {
-      const data = await fetchAdvancedUsers({
+      const { users: newUsers } = await fetchAdvancedUsers({
         username,
         location,
         minRepos,
         page: loadMore ? page + 1 : 1,
       });
 
-      setUsers(loadMore ? [...users, ...data.items] : data.items);
+      setUsers(loadMore ? [...users, ...newUsers] : newUsers);
       setPage(loadMore ? page + 1 : 1);
     } catch {
-      setError("Looks like we cant find the user");
+      setError("Looks like we cant find any users matching the criteria");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      {/* SEARCH FORM */}
+    <div className="max-w-4xl mx-auto p-4">
+      {/* Search Form */}
       <form
         onSubmit={handleBasicSearch}
-        className="bg-white p-4 rounded-lg shadow space-y-4"
+        className="bg-white p-6 rounded-lg shadow space-y-4"
       >
-        <h2 className="text-xl font-bold">GitHub User Search</h2>
+        <h2 className="text-2xl font-bold">GitHub User Search</h2>
 
         <input
           type="text"
@@ -81,7 +78,6 @@ const Search = () => {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
-
           <input
             type="number"
             placeholder="Minimum Repositories"
@@ -95,7 +91,6 @@ const Search = () => {
           <button className="bg-blue-600 text-white px-4 py-2 rounded">
             Basic Search
           </button>
-
           <button
             type="button"
             onClick={() => handleAdvancedSearch()}
@@ -106,49 +101,53 @@ const Search = () => {
         </div>
       </form>
 
-      {/* STATES */}
-      {loading && <p className="mt-4">Loading...</p>}
+      {/* States */}
+      {loading && <p className="mt-4 text-gray-700">Loading...</p>}
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
-      {/* BASIC SEARCH RESULT */}
+      {/* Basic Search Result */}
       {user && (
-        <div className="mt-6 p-4 border rounded shadow">
+        <div className="mt-6 p-4 border rounded shadow flex items-center gap-4">
           <img
             src={user.avatar_url}
             alt={user.login}
             className="w-24 rounded-full"
           />
-          <h3 className="text-lg font-semibold">{user.name}</h3>
-          <a
-            href={user.html_url}
-            target="_blank"
-            className="text-blue-600"
-          >
-            View Profile
-          </a>
+          <div>
+            <h3 className="text-lg font-semibold">{user.name || user.login}</h3>
+            <p>Location: {user.location || "N/A"}</p>
+            <p>Repositories: {user.public_repos}</p>
+            <p>Followers: {user.followers}</p>
+            <a
+              href={user.html_url}
+              target="_blank"
+              className="text-blue-600"
+            >
+              View Profile
+            </a>
+          </div>
         </div>
       )}
 
-      {/* ADVANCED SEARCH RESULTS */}
+      {/* Advanced Search Results */}
       {users.length > 0 && (
         <div className="mt-6 space-y-4">
           {users.map((u) => (
             <div
               key={u.id}
-              className="p-4 border rounded flex items-center gap-4"
+              className="p-4 border rounded shadow flex items-center gap-4"
             >
               <img
                 src={u.avatar_url}
-                className="w-16 rounded-full"
                 alt={u.login}
+                className="w-16 rounded-full"
               />
               <div>
                 <h4 className="font-semibold">{u.login}</h4>
-                <a
-                  href={u.html_url}
-                  target="_blank"
-                  className="text-blue-600"
-                >
+                <p>Location: {u.location || "N/A"}</p>
+                <p>Repositories: {u.public_repos}</p>
+                <p>Followers: {u.followers}</p>
+                <a href={u.html_url} target="_blank" className="text-blue-600">
                   View Profile
                 </a>
               </div>
