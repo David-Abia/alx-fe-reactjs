@@ -1,11 +1,14 @@
-import Search from "./components/Search";
+import './services/api';
+import './App.css'
+import Search from './components/Search';
 
 function App() {
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       <Search />
-    </div>
-  );
+    </>
+  )
 }
 
-export default App;
+export default App

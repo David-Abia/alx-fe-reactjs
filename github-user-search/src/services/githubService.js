@@ -1,31 +1,29 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "https://api.github.com",
-});
+export async function fetchUserData({ username, location, minRepos, page }) {
+    const queries = [];
 
-/**
- * BASIC SEARCH – single user
- */
-export const fetchUserData = async (username) => {
-  const response = await api.get(`/users/${username}`);
-  return response.data;
-};
+    if (username.trim().length) {
+        queries.push(username);
+    }
 
-/**
- * ADVANCED SEARCH – multiple users with filters
- */
-export const fetchAdvancedUsers = async (username, location, minRepos) => {
-  const parts = [];
-  if (username) parts.push(username);
-  if (location) parts.push(`location:${location}`);
-  if (minRepos) parts.push(`repos:>=${minRepos}`);
+    if (location.trim().length) {
+        queries.push(`location:${location}`);
+    }
 
-  const query = parts.join("+");
+    if (minRepos.trim().length) {
+        queries.push(`repos:>${minRepos}`);
+    }
 
-  if (!query) return [];
+    const queryString = queries.join(' ');
 
-  const response = await api.get(`/search/users?q=${query}&per_page=10`);
+    const url = `https://api.github.com/search/users?q=${encodeURIComponent(queryString)}&page=${page}&per_page=6`;
 
-  return response.data.items;
-};
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

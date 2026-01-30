@@ -1,174 +1,181 @@
 import { useState } from "react";
-import { fetchUserData, fetchAdvancedUsers } from "../services/githubService";
+import { fetchUserData } from "../services/githubService";
 
-const Search = () => {
-  const [username, setUsername] = useState("");
-  const [location, setLocation] = useState("");
-  const [minRepos, setMinRepos] = useState("");
+function Search() {
+    const [username, setUsername] = useState('');
+    const [location, setLocation] = useState('');
+    const [minRepos, setMinRepos] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [errors, setErrors] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
-  const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+    const reset = () => {
+        setErrors([]);
+        setPage(1);
+        setHasMore(true);
+    };
 
-  // -----------------------
-  // Basic search
-  // -----------------------
-  const handleBasicSearch = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setUser(null);
-    setUsers([]);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (!username) {
-      setError("Please enter a username");
-      setLoading(false);
-      return;
-    }
+        if (username.trim().length === 0) {
+            setErrors(["Search field can't be empty!"]);
+            return;
+        }
 
-    try {
-      const data = await fetchUserData(username);
-      setUser(data);
-    } catch {
-      setError("Looks like we can't find the user");
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            setLoading(true);
+            const data = await fetchUserData({username, location, minRepos, page});
+            if (data.items.length < 6) setHasMore(false);
+            setSearchResults(data.items);
+            reset();
+        } catch (error) {
+            setErrors(prev => [...prev, "Looks like we cant find the user"]);
+        }
+        setLoading(false);
+    };
 
-  // -----------------------
-  // Advanced search
-  // -----------------------
-  const handleAdvancedSearch = async () => {
-    setLoading(true);
-    setError("");
-    setUser(null);
-    setUsers([]);
+    const loadMore = async () => {
+        setLoading(true);
+        try {
+            const nextPage = page + 1;
+            const data = await fetchUserData({username, location, minRepos, page: nextPage});
+            setSearchResults(data.items);
+            setPage(nextPage);
 
-    try {
-      const results = await fetchAdvancedUsers(username, location, minRepos);
+            const usersNum = data.items.length;
+            if (usersNum % 6 === usersNum ) setHasMore(false);
+        } catch (error) {
+            setErrors(prev => [...prev, "Error loading more results"]);
+        }
+        setLoading(false);
+    };
 
-      if (results.length === 0) {
-        setError("No users found matching your criteria");
-      }
-
-      setUsers(results);
-    } catch {
-      setError("Looks like we can't find any users");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      {/* Search Form */}
-      <form
-        onSubmit={handleBasicSearch}
-        className="bg-white p-6 rounded-xl shadow-lg space-y-6"
-      >
-        <h2 className="text-3xl font-bold text-gray-800">GitHub User Search</h2>
-
-        <input
-          type="text"
-          placeholder="Username"
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="Location"
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Minimum Repositories"
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            value={minRepos}
-            onChange={(e) => setMinRepos(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-4">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-            Basic Search
-          </button>
-
-          <button
-            type="button"
-            onClick={handleAdvancedSearch}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
-          >
-            Advanced Search
-          </button>
-        </div>
-      </form>
-
-      {/* Loading and Error */}
-      {loading && <p className="mt-6 text-gray-600 text-lg">Loading...</p>}
-      {error && <p className="mt-6 text-red-600 text-lg">{error}</p>}
-
-      {/* ----------------- */}
-      {/* Basic Search Result */}
-      {/* ----------------- */}
-      {user && (
-        <div className="mt-8 p-6 bg-white rounded-xl shadow-lg flex items-center gap-6 hover:shadow-xl transition">
-          <img
-            src={user.avatar_url}
-            alt={user.login}
-            className="w-28 h-28 rounded-full border-2 border-gray-200"
-          />
-          <div>
-            <h3 className="text-2xl font-semibold text-gray-800">
-              {user.name || user.login}
-            </h3>
-            <p className="text-gray-600 mt-1">{user.login}</p>
-            <a
-              href={user.html_url}
-              target="_blank"
-              className="text-blue-600 mt-2 inline-block font-medium hover:underline"
-            >
-              View Profile
-            </a>
-          </div>
-        </div>
-      )}
-
-      {/* --------------------- */}
-      {/* Advanced Search Results */}
-      {/* --------------------- */}
-      {users.length > 0 && (
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {users.map((u) => (
-            <div
-              key={u.id}
-              className="bg-white p-4 rounded-xl shadow-lg flex flex-col items-center hover:shadow-2xl transition"
-            >
-              <img
-                src={u.avatar_url}
-                alt={u.login}
-                className="w-24 h-24 rounded-full border-2 border-gray-200"
-              />
-              <h4 className="mt-3 text-lg font-semibold text-gray-800">{u.login}</h4>
-              <a
-                href={u.html_url}
-                target="_blank"
-                className="mt-2 text-blue-600 font-medium hover:underline"
-              >
-                View Profile
-              </a>
+    return (
+        <div className="max-w-md mx-auto p-4">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
+                <div className="flex flex-col gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Username</label>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            placeholder="Search GitHub usernames"
+                            className="mt-1 p-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Location</label>
+                        <input
+                            type="text"
+                            value={location}
+                            onChange={e => setLocation(e.target.value)}
+                            placeholder="Location (optional)"
+                            className="mt-1 p-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Minimum Repositories</label>
+                        <input
+                            type="number"
+                            value={minRepos}
+                            onChange={e => setMinRepos(e.target.value)}
+                            placeholder="Minimum Repositories (optional)"
+                            className="mt-1 p-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div className="flex justify-between">
+                        <button
+                            type="submit"
+                            className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+                        >
+                            Search
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                reset();
+                                setSearchResults([])
+                                setUsername('');
+                                setLocation('');
+                                setMinRepos('');
+                            }}
+                            className="bg-red-500 text-white rounded-md px-4 py-2 hover:bg-red-600"
+                        >
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <ul className="mt-4">
+                {errors.length > 0 &&
+                    errors.map((error, i) => (
+                        <li className="text-red-500" key={i}>{error}</li>
+                    ))
+                }
+            </ul>
+            <div className="mt-6">
+                {loading ? (
+                    <p>Loading...</p>
+                ) : (
+                    searchResults.map((user, i) => <UserCard key={i} data={user} />)
+                )}
+                {hasMore && !loading && (
+                    <button
+                        onClick={loadMore}
+                        className="mt-4 bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+                    >
+                        Load More
+                    </button>
+                )}
             </div>
-          ))}
         </div>
-      )}
-    </div>
-  );
-};
+    );
+}
 
 export default Search;
+
+function UserCard({ data }) {
+
+    if (!data) return null;
+
+    return (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden w-80 mx-auto my-4">
+            <div className="flex items-center p-4">
+                <img
+                    src={data.avatar_url}
+                    alt={data.login}
+                    className="w-16 h-16 rounded-full border-2 border-gray-200"
+                />
+                <div className="ml-4">
+                    <h2 className="text-xl font-semibold text-gray-800">{data.login}</h2>
+                    <a
+                        href={data.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                    >
+                        GitHub Profile
+                    </a>
+                </div>
+            </div>
+            <div className="bg-gray-100 p-4">
+                <p className="text-gray-600 text-sm">
+                    <strong>Public Repos:</strong> {data.public_repos}
+                </p>
+                <p className="text-gray-600 text-sm">
+                    <strong>Public Gists:</strong> {data.public_gists}
+                </p>
+                <p className="text-gray-600 text-sm">
+                    <strong>Followers:</strong> {data.followers}
+                </p>
+                <p className="text-gray-600 text-sm">
+                    <strong>Following:</strong> {data.following}
+                </p>
+            </div>
+        </div>
+    );
+}
