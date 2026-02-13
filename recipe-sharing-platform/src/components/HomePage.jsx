@@ -36,6 +36,14 @@ export default function HomePage() {
               >
                 View Recipe →
               </Link>
+
+              <Link
+  to="/add-recipe"
+  className="block text-center bg-green-500 text-white font-semibold px-4 py-2 rounded-md mb-6 hover:bg-green-600 transition"
+>
+  Add New Recipe
+</Link>
+
             </div>
           ))}
         </div>
