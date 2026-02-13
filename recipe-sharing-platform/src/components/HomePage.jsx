@@ -6,43 +6,48 @@ function HomePage() {
   useEffect(() => {
     fetch("/src/data.json")
       .then((res) => res.json())
-      .then((data) => setRecipes(data))
-      .catch((err) => console.error("Error loading recipes:", err));
+      .then((data) => setRecipes(data));
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="p-6">
+
       <h1 className="text-3xl font-bold text-center mb-8">
         Recipe Sharing Platform
       </h1>
 
-      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {recipes.map((recipe) => (
-          <div
-            key={recipe.id}
-            className="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl"
-          >
-            <img
-              src={recipe.image}
-              alt={recipe.title}
-              className="w-full h-48 object-cover"
-            />
+      {/* REQUIRED CONTAINER */}
+      <div className="container mx-auto">
 
-            <div className="p-4">
-              <h2 className="text-xl font-semibold mb-2">
+        {/* REQUIRED GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+          {recipes.map((recipe) => (
+            <div
+              key={recipe.id}
+              className="bg-white rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition p-4"
+            >
+              <img
+                src={recipe.image}
+                alt={recipe.title}
+                className="w-full h-40 object-cover rounded"
+              />
+
+              <h2 className="text-xl font-bold mt-3">
                 {recipe.title}
               </h2>
 
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-gray-600 text-sm mt-2">
                 {recipe.summary}
               </p>
 
-              <button className="text-blue-500 font-medium hover:underline">
-                View Recipe →
+              <button className="text-blue-500 mt-3 hover:underline">
+                View Recipe
               </button>
             </div>
-          </div>
-        ))}
+          ))}
+
+        </div>
       </div>
     </div>
   );
