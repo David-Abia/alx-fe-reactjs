@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Spaghetti Carbonara",
+    "summary": "Classic pasta with eggs, cheese, and bacon.",
+    "image": "https://via.placeholder.com/300",
+    "ingredients": ["200g spaghetti", "100g pancetta", "2 eggs", "50g parmesan", "Salt & pepper"],
+    "steps": ["Boil pasta", "Fry pancetta", "Mix eggs and cheese", "Combine everything", "Serve hot"]
+  },
+  {
+    "id": 2,
+    "title": "Chicken Tikka Masala",
+    "summary": "Creamy tomato chicken curry.",
+    "image": "https://via.placeholder.com/300",
+    "ingredients": ["500g chicken", "1 cup yogurt", "2 tbsp tikka masala spice", "1 cup tomato puree"],
+    "steps": ["Marinate chicken", "Cook chicken", "Prepare sauce", "Combine chicken and sauce", "Serve hot"]
+  }
+]
