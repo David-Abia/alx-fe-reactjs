@@ -11,7 +11,11 @@ export default function PostsComponent() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery(
     "posts",
     fetchPosts,
-    { staleTime: 1000 * 60 * 2 } // cache 2 minutes
+    {
+      // ✅ only use staleTime for caching
+      staleTime: 1000 * 60 * 2 // 2 minutes
+      // ❌ do NOT use: cacheTime, refetchOnWindowFocus, keepPreviousData
+    }
   );
 
   if (isLoading) return <p>Loading posts...</p>;
@@ -19,10 +23,12 @@ export default function PostsComponent() {
 
   return (
     <div>
+      {/* Data refetch interaction */}
       <button onClick={refetch}>
         {isFetching ? "Refreshing..." : "Refetch Posts"}
       </button>
 
+      {/* Display cached data */}
       {data.slice(0, 10).map((post) => (
         <div
           key={post.id}
