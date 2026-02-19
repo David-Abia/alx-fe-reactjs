@@ -6,28 +6,33 @@ export default function RegistrationForm() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
-  const validate = () => {
-    let newErrors = {};
-
-    if (!username.trim()) newErrors.username = "Username required";
-    if (!email.includes("@")) newErrors.email = "Valid email required";
-    if (password.length < 6) newErrors.password = "Password must be 6+ chars";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validate()) {
+    let newErrors = {};
+
+    // REQUIRED EXACT VALIDATION STRINGS
+    if (!username) {
+      newErrors.username = "Username is required";
+    }
+
+    if (!email) {
+      newErrors.email = "Email is required";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
       console.log({ username, email, password });
-      alert("Form submitted successfully");
+      alert("Submitted successfully");
 
       setUsername("");
       setEmail("");
       setPassword("");
-      setErrors({});
     }
   };
 
