@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-ro
 import Home from "./components/Home.jsx";
 import About from "./components/About.jsx";
 import Profile from "./components/Profile.jsx";
-import User from "./components/User.jsx";
+import BlogPost from "./components/BlogPost.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
@@ -20,7 +20,7 @@ export default function App() {
           <Link to="/" style={{ marginRight: 10 }}>Home</Link>
           <Link to="/about" style={{ marginRight: 10 }}>About</Link>
           <Link to="/profile" style={{ marginRight: 10 }}>Profile</Link>
-          <Link to="/user/1">User 1</Link>
+          <Link to="/blog/1">Blog Post 1</Link>
         </nav>
 
         <div style={{ marginBottom: 20 }}>
@@ -46,9 +46,9 @@ export default function App() {
           />
 
           {/* Dynamic Route */}
-          <Route path="/user/:id" element={<User />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
 
-          {/* Redirect fallback */}
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
