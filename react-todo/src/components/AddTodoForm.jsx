@@ -18,7 +18,9 @@ export default function AddTodoForm({ addTodo }) {
         placeholder="Add new todo"
         onChange={(e) => setText(e.target.value)}
       />
-      <button type="submit" style={{ marginLeft: 10 }}>Add</button>
+      <button type="submit" style={{ marginLeft: 10 }}>
+        Add
+      </button>
     </form>
   );
 }

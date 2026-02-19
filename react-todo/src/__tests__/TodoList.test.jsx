@@ -21,26 +21,26 @@ describe("TodoList Component", () => {
     expect(screen.getByText("New Todo")).toBeInTheDocument();
   });
 
-  test("toggles todo completion", () => {
+  test("toggles a todo completion", () => {
     render(<TodoList />);
-    const todoItem = screen.getByText("Learn React");
+    const todo = screen.getByText("Learn React");
 
-    // initially not completed
-    expect(todoItem).toHaveStyle("text-decoration: none");
+    // Initially not completed
+    expect(todo).toHaveStyle("text-decoration: none");
 
-    fireEvent.click(todoItem);
-    expect(todoItem).toHaveStyle("text-decoration: line-through");
+    fireEvent.click(todo);
+    expect(todo).toHaveStyle("text-decoration: line-through");
 
-    fireEvent.click(todoItem);
-    expect(todoItem).toHaveStyle("text-decoration: none");
+    fireEvent.click(todo);
+    expect(todo).toHaveStyle("text-decoration: none");
   });
 
   test("deletes a todo", () => {
     render(<TodoList />);
-    const todoItem = screen.getByText("Learn React");
-    const deleteButton = todoItem.nextSibling;
+    const todo = screen.getByText("Learn React");
+    const deleteButton = todo.nextSibling;
 
     userEvent.click(deleteButton);
-    expect(todoItem).not.toBeInTheDocument();
+    expect(todo).not.toBeInTheDocument();
   });
 });

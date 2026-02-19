@@ -42,7 +42,12 @@ export default function TodoList() {
             }}
           >
             {todo.text}
-            <button onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // prevent toggle
+                deleteTodo(todo.id);
+              }}
+            >
               Delete
             </button>
           </li>
