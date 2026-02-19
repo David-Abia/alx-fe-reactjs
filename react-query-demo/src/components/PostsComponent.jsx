@@ -1,3 +1,4 @@
+import React from "react";
 import { useQuery } from "react-query";
 
 const fetchPosts = async () => {
@@ -7,16 +8,11 @@ const fetchPosts = async () => {
 };
 
 export default function PostsComponent() {
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isFetching
-  } = useQuery("posts", fetchPosts, {
-    staleTime: 1000 * 60 * 2 // cache lasts 2 minutes
-  });
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery(
+    "posts",
+    fetchPosts,
+    { staleTime: 1000 * 60 * 2 } // cache 2 minutes
+  );
 
   if (isLoading) return <p>Loading posts...</p>;
   if (isError) return <p>Error: {error.message}</p>;
@@ -27,8 +23,11 @@ export default function PostsComponent() {
         {isFetching ? "Refreshing..." : "Refetch Posts"}
       </button>
 
-      {data.slice(0, 10).map(post => (
-        <div key={post.id} style={{ border: "1px solid #ccc", margin: 10, padding: 10 }}>
+      {data.slice(0, 10).map((post) => (
+        <div
+          key={post.id}
+          style={{ border: "1px solid #ccc", margin: 10, padding: 10 }}
+        >
           <h3>{post.title}</h3>
           <p>{post.body}</p>
         </div>
