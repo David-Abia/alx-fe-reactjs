@@ -1,23 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext } from 'react';
 
-export const UserContext = createContext();
+const UserContext = createContext();
 
-export function UserProvider({ children }) {
-  const [name, setName] = useState("Jane Doe");
-  const [email] = useState("jane.doe@example.com");
-
-  return (
-    <UserContext.Provider value={{ name, email }}>
-      <div>
-        <input
-          type="text"
-          placeholder="Update name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-
-      {children}
-    </UserContext.Provider>
-  );
-}
+export default UserContext;
