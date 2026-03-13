@@ -1,9 +1,11 @@
 import { useParams } from "react-router-dom";
-import { useRecipeStore } from "./recipeStore";
+import { useRecipeStore } from "../store/recipeStore";
+
 import EditRecipeForm from "./EditRecipeForm";
 import DeleteRecipeButton from "./DeleteRecipeButton";
 
 function RecipeDetails() {
+
   const { id } = useParams();
 
   const recipe = useRecipeStore((state) =>
@@ -15,7 +17,8 @@ function RecipeDetails() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
+
       <h1>{recipe.title}</h1>
 
       <p>{recipe.description}</p>
@@ -23,6 +26,7 @@ function RecipeDetails() {
       <EditRecipeForm recipe={recipe} />
 
       <DeleteRecipeButton recipeId={recipe.id} />
+
     </div>
   );
 }
