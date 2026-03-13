@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import UserContext from "./UserContext";
+import { UserContext } from "./UserContext";
 
 function UserProfile() {
   const userData = useContext(UserContext);
@@ -8,11 +8,6 @@ function UserProfile() {
     <div>
       <p>Name: {userData.name}</p>
       <p>Email: {userData.email}</p>
-
-      <input
-        type="text"
-        placeholder="Update name"
-      />
     </div>
   );
 }
