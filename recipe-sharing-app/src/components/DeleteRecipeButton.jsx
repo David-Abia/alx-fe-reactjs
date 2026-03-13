@@ -5,7 +5,6 @@ function DeleteRecipeButton({ recipeId }) {
 
   const handleDelete = () => {
     deleteRecipe(recipeId);
-    alert("Recipe deleted");
   };
 
   return (
@@ -13,9 +12,9 @@ function DeleteRecipeButton({ recipeId }) {
       onClick={handleDelete}
       style={{
         marginTop: "15px",
+        padding: "8px",
         backgroundColor: "red",
         color: "white",
-        padding: "8px",
         border: "none",
       }}
     >

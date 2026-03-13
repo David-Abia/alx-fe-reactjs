@@ -16,7 +16,7 @@ function EditRecipeForm({ recipe }) {
       description,
     });
 
-    alert("Recipe updated!");
+    alert("Recipe updated");
   };
 
   return (
@@ -26,14 +26,12 @@ function EditRecipeForm({ recipe }) {
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Recipe title"
         style={{ display: "block", margin: "10px 0" }}
       />
 
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Recipe description"
         style={{ display: "block", margin: "10px 0" }}
       />
 

@@ -5,12 +5,12 @@ export const useRecipeStore = create((set) => ({
     {
       id: 1,
       title: "Jollof Rice",
-      description: "A delicious West African rice dish",
+      description: "A delicious West African rice dish.",
     },
     {
       id: 2,
       title: "Pancakes",
-      description: "Soft breakfast pancakes",
+      description: "Soft fluffy breakfast pancakes.",
     },
   ],
 
