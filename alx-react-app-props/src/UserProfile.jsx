@@ -8,6 +8,11 @@ function UserProfile() {
     <div>
       <p>Name: {userData.name}</p>
       <p>Email: {userData.email}</p>
+
+      <input
+        type="text"
+        placeholder="Update name"
+      />
     </div>
   );
 }
